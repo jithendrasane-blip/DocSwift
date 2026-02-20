@@ -159,9 +159,34 @@
     <textarea id="resEducation" placeholder="Education" 
         style="width:90%; padding:8px; margin-top:10px;" rows="3"></textarea><br>
 
-    <button onclick="generateResume()">Generate Resume PDF</button>
+    <button onclick="previewResume()">Preview Resume</button>
+<button onclick="generateResume()" style="margin-left:10px;">
+Download PDF
+</button>
 </div>
+<div id="resumePreview" 
+     style="display:none; margin:40px auto; padding:30px; 
+     background:white; max-width:800px; 
+     box-shadow:0 10px 25px rgba(0,0,0,0.08);">
 
+    <div style="display:flex;">
+        <div style="width:30%; background:#1e1e1e; color:white; padding:20px;">
+            <h3>SKILLS</h3>
+            <p id="previewSkills"></p>
+        </div>
+
+        <div style="width:70%; padding:20px;">
+            <h1 id="previewName"></h1>
+            <p id="previewContact" style="color:#666;"></p>
+
+            <h3>EXPERIENCE</h3>
+            <p id="previewExperience"></p>
+
+            <h3>EDUCATION</h3>
+            <p id="previewEducation"></p>
+        </div>
+    </div>
+</div>
 <footer>
     © 2026 DocSwift. All rights reserved.
 </footer>
@@ -295,7 +320,28 @@ async function generateResume() {
 
     pdf.save("DocSwift_Modern_Resume.pdf");
 }
+function previewResume() {
 
+    const name = document.getElementById("resName").value;
+    const email = document.getElementById("resEmail").value;
+    const phone = document.getElementById("resPhone").value;
+    const skills = document.getElementById("resSkills").value;
+    const experience = document.getElementById("resExperience").value;
+    const education = document.getElementById("resEducation").value;
+
+    if (!name) {
+        alert("Please enter your name");
+        return;
+    }
+
+    document.getElementById("previewName").innerText = name;
+    document.getElementById("previewContact").innerText = email + " | " + phone;
+    document.getElementById("previewSkills").innerText = skills;
+    document.getElementById("previewExperience").innerText = experience;
+    document.getElementById("previewEducation").innerText = education;
+
+    document.getElementById("resumePreview").style.display = "block";
+}
 </script>
 
 </body>
