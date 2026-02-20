@@ -143,6 +143,24 @@
     </div>
 
 </section>
+<div class="card" style="max-width:700px; margin:auto; margin-bottom:40px;">
+    <h2>Create Your Resume</h2>
+
+    <input type="text" id="resName" placeholder="Full Name" style="width:90%; padding:8px;"><br>
+    <input type="email" id="resEmail" placeholder="Email" style="width:90%; padding:8px;"><br>
+    <input type="text" id="resPhone" placeholder="Phone" style="width:90%; padding:8px;"><br>
+
+    <textarea id="resSkills" placeholder="Skills (comma separated)" 
+        style="width:90%; padding:8px; margin-top:10px;" rows="3"></textarea><br>
+
+    <textarea id="resExperience" placeholder="Experience" 
+        style="width:90%; padding:8px; margin-top:10px;" rows="4"></textarea><br>
+
+    <textarea id="resEducation" placeholder="Education" 
+        style="width:90%; padding:8px; margin-top:10px;" rows="3"></textarea><br>
+
+    <button onclick="generateResume()">Generate Resume PDF</button>
+</div>
 
 <footer>
     © 2026 DocSwift. All rights reserved.
@@ -212,6 +230,70 @@ async function mergePDF() {
     link.href = URL.createObjectURL(blob);
     link.download = "merged.pdf";
     link.click();
+}
+async function generateResume() {
+    const { jsPDF } = window.jspdf;
+
+    const name = document.getElementById("resName").value;
+    const email = document.getElementById("resEmail").value;
+    const phone = document.getElementById("resPhone").value;
+    const skills = document.getElementById("resSkills").value;
+    const experience = document.getElementById("resExperience").value;
+    const education = document.getElementById("resEducation").value;
+
+    if (!name) return alert("Please enter your name");
+
+    const pdf = new jsPDF();
+    
+    // Sidebar background
+    pdf.setFillColor(30, 30, 30);
+    pdf.rect(0, 0, 60, 297, 'F');
+
+    // Name (top right)
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(22);
+    pdf.setTextColor(0,0,0);
+    pdf.text(name, 70, 30);
+
+    pdf.setFontSize(11);
+    pdf.setFont("helvetica", "normal");
+    pdf.text(`${email} | ${phone}`, 70, 38);
+
+    // Skills in sidebar
+    pdf.setTextColor(255,255,255);
+    pdf.setFontSize(14);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("SKILLS", 10, 30);
+
+    pdf.setFontSize(10);
+    pdf.setFont("helvetica", "normal");
+    const skillLines = pdf.splitTextToSize(skills, 40);
+    pdf.text(skillLines, 10, 40);
+
+    // Experience section
+    pdf.setTextColor(0,0,0);
+    pdf.setFontSize(14);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("EXPERIENCE", 70, 60);
+
+    pdf.setFontSize(11);
+    pdf.setFont("helvetica", "normal");
+    const expLines = pdf.splitTextToSize(experience, 120);
+    pdf.text(expLines, 70, 70);
+
+    // Education section
+    let eduStart = 70 + (expLines.length * 6) + 20;
+
+    pdf.setFontSize(14);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("EDUCATION", 70, eduStart);
+
+    pdf.setFontSize(11);
+    pdf.setFont("helvetica", "normal");
+    const eduLines = pdf.splitTextToSize(education, 120);
+    pdf.text(eduLines, 70, eduStart + 10);
+
+    pdf.save("DocSwift_Modern_Resume.pdf");
 }
 
 </script>
