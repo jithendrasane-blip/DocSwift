@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QuickPDF Converter</title>
+    <div style="margin:20px; color:#555;">
+    Free users: Max 5MB files<br>
+    Premium: Unlimited size - Rs 99/month
+    </div>
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+    <script src="https://unpkg.com/pdfjs-dist/build/pdf.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f8;
+            text-align: center;
+            padding: 40px;
+        }
+        .box {
+            background: white;
+            padding: 25px;
+            margin: 20px auto;
+            width: 420px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        input {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1 style="font-size:32px;">docswift</h1>
+<p>Fast & Free PDF Conversion Tools</p>
+
+<!-- IMAGE TO PDF -->
+<div class="box">
+    <h3>Image → PDF</h3>
+    <input type="file" id="imageInput" accept="image/*">
+    <br>
+    <button onclick="imageToPDF()">Convert</button>
+</div>
+
+<!-- WORD TO PDF -->
+<div class="box">
+    <h3>Word (.docx) → PDF</h3>
+    <input type="file" id="wordInput" accept=".docx">
+    <br>
+    <button onclick="wordToPDF()">Convert</button>
+</div>
+
+<!-- PDF TO WORD -->
+<div class="box">
+    <h3>PDF → Word (.docx)</h3>
+    <input type="file" id="pdfInput" accept="application/pdf">
+    <br>
+    <button onclick="pdfToWord()">Convert</button>
+</div>
+
+<script>
+
+async function imageToPDF() {
+    const { jsPDF } = window.jspdf;
+    const file = document.getElementById("imageInput").files[0];
+    if (!file) return alert("Upload image");
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const pdf = new jsPDF();
+        pdf.addImage(e.target.result, 'JPEG', 10, 10, 180, 160);
+        pdf.save("image-converted.pdf");
+    };
+    reader.readAsDataURL(file);
+}
+
+async function wordToPDF() {
+    const { jsPDF } = window.jspdf;
+    const file = document.getElementById("wordInput").files[0];
+    if (!file) return alert("Upload Word file");
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        mammoth.extractRawText({ arrayBuffer: e.target.result })
+            .then(function(result) {
+                const pdf = new jsPDF();
+                pdf.text(result.value, 10, 10);
+                pdf.save("word-converted.pdf");
+            });
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+async function pdfToWord() {
+    const file = document.getElementById("pdfInput").files[0];
+    if (!file) return alert("Upload PDF file");
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        const pdf = await pdfjsLib.getDocument({ data: e.target.result }).promise;
+        let textContent = "";
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const text = await page.getTextContent();
+            text.items.forEach(item => {
+                textContent += item.str + " ";
+            });
+            textContent += "\n\n";
+        }
+
+        const blob = new Blob([textContent], {
+            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        });
+
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "pdf-converted.docx";
+        link.click();
+    };
+
+    reader.readAsArrayBuffer(file);
+}
+
+</script>
+
+</body>
+</html>
