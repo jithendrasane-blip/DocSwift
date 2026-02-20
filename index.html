@@ -54,7 +54,12 @@
     </style>
 </head>
 <body>
-
+    <div style="margin:20px;">
+    <label>
+        <input type="checkbox" id="premiumToggle">
+        Enable Premium Mode (Unlimited Size)
+    </label>
+</div>
 <h1>DocSwift</h1>
 <p>Fast & Free PDF Tools</p>
 
@@ -83,11 +88,26 @@
 </div>
 
 <script>
+    
+    function isPremium() {
+    return document.getElementById("premiumToggle").checked;
+}
+
+function checkFileSize(file) {
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (!isPremium() && file.size > maxSize) {
+        alert("Free limit is 5MB. Upgrade to Premium for unlimited size.");
+        return false;
+    }
+
+    return true;
+}    
 
 async function imageToPDF() {
     const { jsPDF } = window.jspdf;
     const file = document.getElementById("imageInput").files[0];
-    if (!file) return alert("Upload image");
+    if (!file || !checkfilesize(file)) return;
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -101,7 +121,7 @@ async function imageToPDF() {
 async function wordToPDF() {
     const { jsPDF } = window.jspdf;
     const file = document.getElementById("wordInput").files[0];
-    if (!file) return alert("Upload Word file");
+    if (!file || !checkfilesize(file)) return;
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -117,7 +137,7 @@ async function wordToPDF() {
 
 async function mergePDF() {
     const files = document.getElementById("mergeInput").files;
-    if (files.length < 2) return alert("Select at least 2 PDFs");
+    if (!file || !checkfilesize(file)) return;
 
     const mergedPdf = await PDFLib.PDFDocument.create();
 
