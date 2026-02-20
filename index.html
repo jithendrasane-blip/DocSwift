@@ -1,40 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>QuickPDF Converter</title>
-    <div style="margin:20px; color:#555;">
-    Free users: Max 5MB files<br>
-    Premium: Unlimited size - Rs 99/month
-    </div>
+    <title>DocSwift - PDF Tools</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
-    <script src="https://unpkg.com/pdfjs-dist/build/pdf.js"></script>
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 
     <style>
         body {
-            font-family: Arial;
-            background: #f4f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #eef2f3, #ffffff);
             text-align: center;
-            padding: 40px;
+            padding: 20px;
         }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
         .box {
             background: white;
             padding: 25px;
             margin: 20px auto;
-            width: 420px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 420px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
         }
+
         button {
-            padding: 10px 15px;
-            background: #007bff;
+            padding: 10px 20px;
+            background: black;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             margin-top: 10px;
         }
+
         input {
             margin-top: 10px;
         }
@@ -42,8 +55,8 @@
 </head>
 <body>
 
-<h1 style="font-size:32px;">docswift</h1>
-<p>Fast & Free PDF Conversion Tools</p>
+<h1>DocSwift</h1>
+<p>Fast & Free PDF Tools</p>
 
 <!-- IMAGE TO PDF -->
 <div class="box">
@@ -61,12 +74,12 @@
     <button onclick="wordToPDF()">Convert</button>
 </div>
 
-<!-- PDF TO WORD -->
+<!-- MERGE PDF -->
 <div class="box">
-    <h3>PDF → Word (.docx)</h3>
-    <input type="file" id="pdfInput" accept="application/pdf">
+    <h3>Merge PDF</h3>
+    <input type="file" id="mergeInput" accept="application/pdf" multiple>
     <br>
-    <button onclick="pdfToWord()">Convert</button>
+    <button onclick="mergePDF()">Merge & Download</button>
 </div>
 
 <script>
@@ -102,35 +115,26 @@ async function wordToPDF() {
     reader.readAsArrayBuffer(file);
 }
 
-async function pdfToWord() {
-    const file = document.getElementById("pdfInput").files[0];
-    if (!file) return alert("Upload PDF file");
+async function mergePDF() {
+    const files = document.getElementById("mergeInput").files;
+    if (files.length < 2) return alert("Select at least 2 PDFs");
 
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        const pdf = await pdfjsLib.getDocument({ data: e.target.result }).promise;
-        let textContent = "";
+    const mergedPdf = await PDFLib.PDFDocument.create();
 
-        for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const text = await page.getTextContent();
-            text.items.forEach(item => {
-                textContent += item.str + " ";
-            });
-            textContent += "\n\n";
-        }
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+        const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+    }
 
-        const blob = new Blob([textContent], {
-            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        });
-
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "pdf-converted.docx";
-        link.click();
-    };
-
-    reader.readAsArrayBuffer(file);
+    const mergedPdfFile = await mergedPdf.save();
+    const blob = new Blob([mergedPdfFile], { type: "application/pdf" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "merged.pdf";
+    link.click();
 }
 
 </script>
