@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>DocSwift - PDF Tools</title>
-
+    <title>DocSwift - Fast & Free PDF Tools</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Libraries -->
@@ -10,38 +9,80 @@
     <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #eef2f3, #ffffff);
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: #f9fafb;
+            color: #111;
+        }
+
+        header {
+            background: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 22px;
+        }
+
+        .premium-btn {
+            background: black;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .hero {
             text-align: center;
-            padding: 20px;
+            padding: 60px 20px;
         }
 
-        h1 {
-            font-size: 32px;
-            margin-bottom: 5px;
+        .hero h1 {
+            font-size: 40px;
+            margin-bottom: 10px;
         }
 
-        p {
+        .hero p {
             color: #666;
-            margin-bottom: 30px;
+            font-size: 18px;
         }
 
-        .box {
+        .tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .card {
             background: white;
             padding: 25px;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 420px;
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            text-align: center;
+            transition: 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
         }
 
         button {
-            padding: 10px 20px;
             background: black;
             color: white;
+            padding: 10px 18px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -51,52 +92,67 @@
         input {
             margin-top: 10px;
         }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            margin-top: 50px;
+            color: #777;
+            font-size: 14px;
+        }
     </style>
 </head>
+
 <body>
-    <div style="margin:20px;">
-    <label>
-        <input type="checkbox" id="premiumToggle">
-        Enable Premium Mode (Unlimited Size)
-    </label>
-</div>
-<h1>DocSwift</h1>
-<p>Fast & Free PDF Tools</p>
 
-<!-- IMAGE TO PDF -->
-<div class="box">
-    <h3>Image → PDF</h3>
-    <input type="file" id="imageInput" accept="image/*">
-    <br>
-    <button onclick="imageToPDF()">Convert</button>
-</div>
+<header>
+    <div class="logo">DocSwift</div>
+    <div class="premium-btn" onclick="alert('Premium coming soon – ₹149/month')">
+        Upgrade to Premium
+    </div>
+</header>
 
-<!-- WORD TO PDF -->
-<div class="box">
-    <h3>Word (.docx) → PDF</h3>
-    <input type="file" id="wordInput" accept=".docx">
-    <br>
-    <button onclick="wordToPDF()">Convert</button>
-</div>
+<section class="hero">
+    <h1>Fast & Secure PDF Tools</h1>
+    <p>Convert, Merge and Manage PDFs in seconds.</p>
+    <p style="font-size:14px; color:#999;">Free limit: 5MB per file</p>
+</section>
 
-<!-- MERGE PDF -->
-<div class="box">
-    <h3>Merge PDF</h3>
-    <input type="file" id="mergeInput" accept="application/pdf" multiple>
-    <br>
-    <button onclick="mergePDF()">Merge & Download</button>
-</div>
+<section class="tools">
+
+    <!-- Image to PDF -->
+    <div class="card">
+        <h3>Image → PDF</h3>
+        <input type="file" id="imageInput" accept="image/*"><br>
+        <button onclick="imageToPDF()">Convert</button>
+    </div>
+
+    <!-- Word to PDF -->
+    <div class="card">
+        <h3>Word → PDF</h3>
+        <input type="file" id="wordInput" accept=".docx"><br>
+        <button onclick="wordToPDF()">Convert</button>
+    </div>
+
+    <!-- Merge PDF -->
+    <div class="card">
+        <h3>Merge PDF</h3>
+        <input type="file" id="mergeInput" accept="application/pdf" multiple><br>
+        <button onclick="mergePDF()">Merge</button>
+    </div>
+
+</section>
+
+<footer>
+    © 2026 DocSwift. All rights reserved.
+</footer>
 
 <script>
 
-function isPremium() {
-    return document.getElementById("premiumToggle").checked;
-}
-
 function checkFileSize(file) {
-    const maxSize = 5 * 1024 * 1024; // 5MB
-
-    if (!isPremium() && file.size > maxSize) {
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
         alert("Free limit is 5MB. Upgrade to Premium for unlimited size.");
         return false;
     }
@@ -159,5 +215,6 @@ async function mergePDF() {
 }
 
 </script>
+
 </body>
 </html>
